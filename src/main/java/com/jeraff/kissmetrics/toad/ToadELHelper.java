@@ -52,7 +52,7 @@ public class ToadELHelper {
         }
     }
 
-    public Object resolve(String expression) {
+    public Object resolve(String expression) throws KissMetricsException {
         if (expression.startsWith(EL_PREFIX)) {
             if (elResolver == null) {
                 try {
@@ -60,6 +60,7 @@ public class ToadELHelper {
                         elResolver = new JeraffELResolver(toadProvider.getToad().getExpressionFactory(), toadProvider);
                     }
                 } catch (Exception e) {
+                    throw new KissMetricsException("Couldn't instantiate EL Resolver", e);
                 }
             }
 
@@ -79,7 +80,7 @@ public class ToadELHelper {
         return expression;
     }
 
-    private String getClientId(String id) {
+    private String getClientId(String id) throws KissMetricsException {
         if (id.isEmpty()) {
             return toadProvider.getDefaultKissClientId();
         }
@@ -87,11 +88,15 @@ public class ToadELHelper {
         return (String)resolve(id);
     }
 
-    private KissMetricsProperties convertMapToProps (Map mapToConvert) {
+    private KissMetricsProperties convertMapToProps (Map mapToConvert) throws KissMetricsException {
         KissMetricsProperties props = new KissMetricsProperties();
 
-        for (Object key : mapToConvert.keySet()) {
-            props.put(key.toString(), mapToConvert.get(key).toString());
+        try {
+            for (Object key : mapToConvert.keySet()) {
+                props.put(key.toString(), mapToConvert.get(key).toString());
+            }
+        } catch(Exception e) {
+            throw new KissMetricsException("Error converting map to KissMetricsProperties", e);
         }
 
         return props;

@@ -1,5 +1,6 @@
 package com.jeraff.kissmetrics.toad.aop;
 
+import com.jeraff.kissmetrics.client.KissMetricsException;
 import com.jeraff.kissmetrics.toad.ToadELHelper;
 import com.jeraff.kissmetrics.toad.Toad;
 import com.jeraff.kissmetrics.toad.ToadProvider;
@@ -16,28 +17,41 @@ public class ToadInterceptor implements MethodInterceptor {
         Object result = null;
         try {
             toadProvider = (ToadProvider) invocation.getThis();
-            toad = toadProvider.getToad();
-            elHelper = new ToadELHelper(toadProvider);
 
-            final Kissmetrics kissAnnotation = invocation.getMethod().getAnnotation(Kissmetrics.class);
+            if (toadProvider != null) {
+                toad = toadProvider.getToad();
 
-            if (kissAnnotation.runBefore()) {
-                elHelper.populateToad(kissAnnotation);
-                toad.run();
-                return invocation.proceed();
+                if (toad != null) {
+                    elHelper = new ToadELHelper(toadProvider);
+
+                    if (elHelper != null) {
+                        final Kissmetrics kissAnnotation = invocation.getMethod().getAnnotation(Kissmetrics.class);
+
+                        if (kissAnnotation != null) {
+                            if (kissAnnotation.runBefore()) {
+                                elHelper.populateToad(kissAnnotation);
+                                toad.run();
+                                return invocation.proceed();
+                            }
+
+                            result = invocation.proceed();
+                            elHelper.populateToad(kissAnnotation);
+                            toad.run();
+                            return result;
+                        }
+                    }
+                }
             }
-
-            result = invocation.proceed();
-            elHelper.populateToad(kissAnnotation);
-            toad.run();
-            return result;
-        } catch(Exception e) {
-            // make sure we don't call things twice :-)
-            if (result != null) {
-                return result;
-            }
-
+        }
+        catch(KissMetricsException ke) {
+            // swallow any of our own errors and make sure to still run the invocation
             return invocation.proceed();
         }
+        catch(Exception e) {
+            // something in the ToadProvider's code threw an exception, just let this fall through and return whatever result
+            // we got
+        }
+
+        return result;
     }
 }

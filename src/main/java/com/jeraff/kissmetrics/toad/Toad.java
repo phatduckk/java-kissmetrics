@@ -78,7 +78,7 @@ public class Toad {
         users.clear();
     }
 
-    public ExpressionFactory getExpressionFactory() throws Exception {
+    public ExpressionFactory getExpressionFactory() throws KissMetricsException {
         return expressionFactory;
     }
 
