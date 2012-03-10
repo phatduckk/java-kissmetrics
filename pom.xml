@@ -6,7 +6,7 @@
 
     <groupId>com.jeraff.kissmetrics</groupId>
     <artifactId>jeraff-kissmetrics</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
 
     <build>
         <plugins>
@@ -61,6 +61,12 @@
             <groupId>aopalliance</groupId>
             <artifactId>aopalliance</artifactId>
             <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.5</version>
         </dependency>
     </dependencies>
 </project>

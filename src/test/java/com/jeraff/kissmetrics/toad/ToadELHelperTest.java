@@ -243,7 +243,7 @@ public class ToadELHelperTest {
      * Note: this is just to test the distinction between el and non-el values, the JeraffELResolverTest does tests
      * to resolve different types of objects
      */
-    public void testResolve() throws Exception {
+    public void testResolve() throws Exception, KissMetricsException {
         // non el string, just returns its input
         Assert.assertEquals(sampleToadProvider.getTestString(), (String)toadELHelper.resolve(sampleToadProvider.getTestString()));
 

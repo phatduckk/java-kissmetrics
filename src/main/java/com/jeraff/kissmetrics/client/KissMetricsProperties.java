@@ -61,4 +61,26 @@ public class KissMetricsProperties {
     public String getQueryString() {
         return sb.toString();
     }
+
+    public void addAll(KissMetricsProperties props, boolean strict) {
+        if (strict) {
+            final String[] tokens = props.getQueryString().split("&");
+            for (String keyValuePair : tokens) {
+                final String[] prop = keyValuePair.split("=");
+
+                // invalidly formatted so ignore
+                if (prop.length != 2) {
+                    continue;
+                }
+
+                final String key = prop[0];
+                final String value = prop[1];
+
+                putSafe(key, value);
+            }
+        } else {
+            // just do a dumb append
+            sb.append(props.getQueryString());
+        }
+    }
 }

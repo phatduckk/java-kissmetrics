@@ -108,6 +108,8 @@ public class ToadTest {
         // check your kissmetrics live feed to make sure this doesn't go through
         toad.user("ryan").record("blah");
         toad.abort();
+        Assert.assertEquals(true, toad.isShouldAbort());
+
         toad.run();
     }
 
@@ -132,5 +134,10 @@ public class ToadTest {
         Assert.assertEquals(userProps.getQueryString(), toad.user("ryan").getPropsMap().get("ryan").getQueryString());
 
         toad.run();
+    }
+
+    @Test
+    public void testGlobalEventProperties() {
+
     }
 }

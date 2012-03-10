@@ -2,6 +2,7 @@ package com.jeraff.kissmetrics.toad;
 
 import com.jeraff.kissmetrics.client.KissMetricsClient;
 import com.jeraff.kissmetrics.client.KissMetricsException;
+import com.jeraff.kissmetrics.client.KissMetricsProperties;
 import com.jeraff.kissmetrics.client.el.JeraffELResolver;
 
 import javax.el.ExpressionFactory;
@@ -11,6 +12,7 @@ public class Toad {
     private KissMetricsClient client;
     private HashMap<String, ToadUser> users = new HashMap<String, ToadUser>();
     private boolean shouldAbort = false;
+    private KissMetricsProperties globalEventProperties;
     private ExpressionFactory expressionFactory;
 
     public Toad(KissMetricsClient client) {
@@ -54,7 +56,13 @@ public class Toad {
                             continue;
                         }
 
-                        client.record(event, user.getPropsMap().get(event));
+                        KissMetricsProperties eventProps = user.getPropsMap().get(event);
+
+                        if (globalEventProperties != null) {
+                            eventProps.addAll(globalEventProperties, false);
+                        }
+
+                        client.record(event, eventProps);
                     }
                 }
                 catch (KissMetricsException e) {
@@ -68,6 +76,10 @@ public class Toad {
 
     public HashMap<String, ToadUser> getUsers() {
         return users;
+    }
+
+    public boolean isShouldAbort() {
+        return shouldAbort;
     }
 
     public void setUsers(HashMap<String, ToadUser> users) {
@@ -84,5 +96,9 @@ public class Toad {
 
     public void setExpressionFactory(ExpressionFactory expressionFactory) {
         this.expressionFactory = expressionFactory;
+    }
+
+    public void setGlobalEventProperties(KissMetricsProperties globalEventProperties) {
+        this.globalEventProperties = globalEventProperties;
     }
 }
