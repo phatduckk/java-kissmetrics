@@ -98,6 +98,10 @@ public class Toad {
         this.expressionFactory = expressionFactory;
     }
 
+    public KissMetricsProperties getGlobalEventProperties() {
+        return globalEventProperties;
+    }
+
     public void setGlobalEventProperties(KissMetricsProperties globalEventProperties) {
         this.globalEventProperties = globalEventProperties;
     }
