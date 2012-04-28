@@ -45,7 +45,9 @@ public class ToadInterceptor implements MethodInterceptor {
         }
         catch(KissMetricsException ke) {
             // swallow any of our own errors and make sure to still run the invocation
-            return invocation.proceed();
+            if (result == null) {
+                return invocation.proceed();
+            }
         }
         catch(Exception e) {
             // something in the ToadProvider's code threw an exception, just let this fall through and return whatever result
