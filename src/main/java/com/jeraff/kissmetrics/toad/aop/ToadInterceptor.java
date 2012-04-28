@@ -6,6 +6,7 @@ import com.jeraff.kissmetrics.toad.Toad;
 import com.jeraff.kissmetrics.toad.ToadProvider;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.omg.PortableServer._ServantActivatorStub;
 
 public class ToadInterceptor implements MethodInterceptor {
     private ToadProvider toadProvider;
@@ -37,6 +38,7 @@ public class ToadInterceptor implements MethodInterceptor {
                             result = invocation.proceed();
                             elHelper.populateToad(kissAnnotation);
                             toad.run();
+                            System.err.println("ToadInterceptor:invoke - successful run");
                             return result;
                         }
                     }
@@ -48,10 +50,12 @@ public class ToadInterceptor implements MethodInterceptor {
             if (result == null) {
                 return invocation.proceed();
             }
+            System.err.println("ToadInterceptor:invoke - KissMetricsException caught");
         }
         catch(Exception e) {
             // something in the ToadProvider's code threw an exception, just let this fall through and return whatever result
             // we got
+            System.err.println("ToadInterceptor:invoke - Exception caught");
         }
 
         return result;
