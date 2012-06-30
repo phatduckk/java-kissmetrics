@@ -8,10 +8,15 @@ import com.ning.http.client.HttpResponseStatus;
 
 public class StatusOnlyAsyncHandler implements AsyncHandler<AsyncKissMetricsResponse> {
     private int status;
+    private Throwable error;
+
+    public boolean hasError() {
+        return error != null;
+    }
 
     @Override
     public void onThrowable(Throwable t) {
-        t.printStackTrace();
+        this.error = t;
     }
 
     @Override
@@ -32,6 +37,8 @@ public class StatusOnlyAsyncHandler implements AsyncHandler<AsyncKissMetricsResp
 
     @Override
     public AsyncKissMetricsResponse onCompleted() throws Exception {
-        return new AsyncKissMetricsResponse(this.status);
+        return (error != null)
+                ? new AsyncKissMetricsResponse(status, error)
+                : new AsyncKissMetricsResponse(status);
     }
 }
