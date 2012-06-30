@@ -1,10 +1,7 @@
 package com.jeraff.kissmetrics.client;
 
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.FluentCaseInsensitiveStringsMap;
-import com.ning.http.client.Response;
+import com.ning.http.client.*;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -125,7 +122,32 @@ public class KissMetricsClient {
         }
 
         try {
-            lastResponse = httpClient.prepareGet(url).execute();
+            lastResponse = httpClient.prepareGet(url).execute(new AsyncHandler<Response>() {
+                @Override
+                public void onThrowable(Throwable t) {
+                    t.printStackTrace();
+                }
+
+                @Override
+                public STATE onBodyPartReceived(HttpResponseBodyPart bodyPart) throws Exception {
+                    return STATE.ABORT;
+                }
+
+                @Override
+                public STATE onStatusReceived(HttpResponseStatus responseStatus) throws Exception {
+                    return STATE.ABORT;
+                }
+
+                @Override
+                public STATE onHeadersReceived(HttpResponseHeaders headers) throws Exception {
+                    return STATE.ABORT;
+                }
+
+                @Override
+                public Response onCompleted() throws Exception {
+                    return null;
+                }
+            });
         } catch (Exception e) {
             throw new KissMetricsException("error: " + url, e);
         }
