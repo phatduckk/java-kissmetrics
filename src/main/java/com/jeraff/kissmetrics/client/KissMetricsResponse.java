@@ -3,8 +3,8 @@ package com.jeraff.kissmetrics.client;
 import java.util.HashMap;
 
 public class KissMetricsResponse {
-    private int status;
-    private HashMap<String, String> headers = new HashMap<String, String>();
+    protected int status;
+    protected HashMap<String, String> headers = new HashMap<String, String>();
 
     public KissMetricsResponse(int status, HashMap<String, String> headers) {
         this.status = status;

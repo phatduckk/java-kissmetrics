@@ -1,9 +1,8 @@
 package com.jeraff.kissmetrics.client;
 
-import com.ning.http.client.*;
+import com.jeraff.kissmetrics.StatusOnlyAsyncHandler;
+import com.ning.http.client.AsyncHttpClient;
 
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 
 public class KissMetricsClient {
@@ -12,7 +11,7 @@ public class KissMetricsClient {
     private AsyncHttpClient httpClient;
     private boolean secure;
     private boolean useClientTimestamp;
-    private Future<Response> lastResponse;
+    private Future<AsyncKissMetricsResponse> lastResponse;
 
     public static final String API_HOST = "trk.kissmetrics.com";
 
@@ -82,18 +81,13 @@ public class KissMetricsClient {
     //////////////////////////////////////////////////////////////////////
     public KissMetricsResponse getResponse() throws KissMetricsException {
         final KissMetricsResponse kissMetricsResponse = new KissMetricsResponse();
-        final Response response;
+        final AsyncKissMetricsResponse response;
 
         try {
             response = lastResponse.get();
-            kissMetricsResponse.setStatus(response.getStatusCode());
+            kissMetricsResponse.setStatus(response.getStatus());
         } catch (Exception e) {
             throw new KissMetricsException("couldn't get response", e);
-        }
-
-        final FluentCaseInsensitiveStringsMap headers = response.getHeaders();
-        for (Map.Entry<String, List<String>> header : headers) {
-            kissMetricsResponse.addHeader(header.getKey(), header.getValue().get(0));
         }
 
         return kissMetricsResponse;
@@ -122,32 +116,7 @@ public class KissMetricsClient {
         }
 
         try {
-            lastResponse = httpClient.prepareGet(url).execute(new AsyncHandler<Response>() {
-                @Override
-                public void onThrowable(Throwable t) {
-                    t.printStackTrace();
-                }
-
-                @Override
-                public STATE onBodyPartReceived(HttpResponseBodyPart bodyPart) throws Exception {
-                    return STATE.ABORT;
-                }
-
-                @Override
-                public STATE onStatusReceived(HttpResponseStatus responseStatus) throws Exception {
-                    return STATE.ABORT;
-                }
-
-                @Override
-                public STATE onHeadersReceived(HttpResponseHeaders headers) throws Exception {
-                    return STATE.ABORT;
-                }
-
-                @Override
-                public Response onCompleted() throws Exception {
-                    return null;
-                }
-            });
+            lastResponse = httpClient.prepareGet(url).execute(new StatusOnlyAsyncHandler());
         } catch (Exception e) {
             throw new KissMetricsException("error: " + url, e);
         }
