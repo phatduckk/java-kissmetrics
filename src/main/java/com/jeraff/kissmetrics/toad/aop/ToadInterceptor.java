@@ -1,12 +1,11 @@
 package com.jeraff.kissmetrics.toad.aop;
 
 import com.jeraff.kissmetrics.client.KissMetricsException;
-import com.jeraff.kissmetrics.toad.ToadELHelper;
 import com.jeraff.kissmetrics.toad.Toad;
+import com.jeraff.kissmetrics.toad.ToadELHelper;
 import com.jeraff.kissmetrics.toad.ToadProvider;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.omg.PortableServer._ServantActivatorStub;
 
 public class ToadInterceptor implements MethodInterceptor {
     private ToadProvider toadProvider;
@@ -38,7 +37,6 @@ public class ToadInterceptor implements MethodInterceptor {
                             result = invocation.proceed();
                             elHelper.populateToad(kissAnnotation);
                             toad.run();
-                            System.err.println("ToadInterceptor:invoke - successful run");
                             return result;
                         }
                     }
